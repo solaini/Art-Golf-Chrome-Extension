@@ -1,0 +1,15 @@
+{ 
+    "name": "MediTee",
+    "version": "0.1",
+    "description": "Quick link to automatically align to requested tee time",
+    "author": "Alex Coffin",
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html",
+        "default_title": "Get the to the tee first"
+    },
+    "icons": {"128": "icon.png"},
+    
+    
+    "manifest_version": 2
+}
