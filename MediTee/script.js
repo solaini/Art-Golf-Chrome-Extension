@@ -1,53 +1,38 @@
-function setTeeDate(date, numDays){
-    newDate = date.setDate(date.getDate() + numDays);
-    newDate = new Date(newDate);
-    dd = newDate.getDate();
-    mm = newDate.getMonth() + 1;
-    y = newDate.getFullYear();
-    teeDate = mm + "/" + dd + "/" + y;
-    return teeDate;
-};
+const DAYS_AHEAD = 14;
+const SHEET_URL = "https://www1.foretees.com/v5/mediterra_golf_m40/Member_sheet";
 
+// Returns the date numDays from `date` as M/D/YYYY (the format ForeTees expects).
+function setTeeDate(date, numDays) {
+    const newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + numDays);
+    return `${newDate.getMonth() + 1}/${newDate.getDate()}/${newDate.getFullYear()}`;
+}
 
+// Converts "HH:MM" (24h, from <input type="time">) to ForeTees' "H:MM AM/PM".
+function formatTeeTime(value) {
+    const [hourStr, teeMin] = value.split(":");
+    const hour24 = Number(hourStr);
+    const hourSet = hour24 >= 12 ? "PM" : "AM";
+    const teeHour = hour24 % 12 || 12;
+    return `${teeHour}:${teeMin} ${hourSet}`;
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-    var checkPageButton = document.getElementById('teetime');
-    checkPageButton.addEventListener('click', function() {
-        let teeTime = document.getElementById("appt").value;
-        teeHour = teeTime.split(":")[0];
-        teeMin = teeTime.split(":")[1];
-        let hourSet = "AM";
-        
-        teeHour = teeTime.split(":")[0];
-        teeMin = teeTime.split(":")[1];
-        console.log(teeHour, teeMin);
-        hourSet = "AM";
-        if (teeHour == 12){
-            teeHour = 12;
-            hourSet = "PM";
-        }else if (teeHour >12){
-            teeHour = teeHour - 12;
-            hourSet = "PM";
-            console.log(`${teeHour}, First IF`);
-        }else if (teeHour > 10){
-            teeHour = teeHour.toString()[1];
-            console.log(`${teeHour} Else IF statement`);
-        }
-        
+function buildTeeSheetUrl(teeTime, now = new Date()) {
+    const calDate = setTeeDate(now, DAYS_AHEAD);
+    // The :~:text= fragment makes Chrome scroll to and highlight the tee time on the sheet.
+    return `${SHEET_URL}?calDate=${calDate}&course=-ALL-&show_calendar#:~:text=${encodeURIComponent(formatTeeTime(teeTime))}`;
+}
 
-        let currentDate = new Date();
-        newTee = setTeeDate(currentDate, 14);
-        //newTee = Date(teeDate);
-        
-        wsite = `https://www1.foretees.com/v5/mediterra_golf_m40/Member_sheet?calDate=${newTee}&course=-ALL-&show_calendar#dp1609621626117:~:text=${teeHour}%3A${teeMin}%20${hourSet}`;
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("teeform").addEventListener("submit", (event) => {
+            event.preventDefault();
+            const teeTime = document.getElementById("appt").value;
+            chrome.tabs.create({ url: buildTeeSheetUrl(teeTime) });
+        });
+    });
+}
 
-        //Have to offset month due to it being 0-11 in MOD.
-        window.open(wsite);
-        
-      
-        //Example Text
-        //chrome.tabs.getSelected(null, function(tab) {
-        //alert(`Your desired tee time is HR: ${teeHour} MIN: ${teeMin} ${hourSet}.  Todays date is ${currentDate}.  Desired Date: ${newTee}`);
-      //});
-    }, false);
-  }, false);
+if (typeof module !== "undefined") {
+    module.exports = { setTeeDate, formatTeeTime, buildTeeSheetUrl };
+}

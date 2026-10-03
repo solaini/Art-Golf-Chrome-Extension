@@ -1,15 +1,13 @@
-{ 
+{
+    "manifest_version": 3,
     "name": "MediTee",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Quick link to automatically align to requested tee time and select it",
     "author": "Alex Coffin",
-    "browser_action": {
+    "action": {
         "default_icon": "icon.png",
         "default_popup": "popup.html",
         "default_title": "Get the tee first"
     },
-    "icons": {"128": "icon.png"},
-    
-    
-    "manifest_version": 3
+    "icons": {"128": "icon.png"}
 }

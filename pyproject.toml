@@ -1,0 +1,10 @@
+[project]
+name = "meditee"
+version = "1.1.0"
+description = "Selenium helper that logs into Mediterra and opens the ForeTees tee sheet"
+readme = "MediTee/readme.txt"
+requires-python = ">=3.10"
+dependencies = [
+    "selenium>=4.50.0",
+    "pause>=0.3",
+]
